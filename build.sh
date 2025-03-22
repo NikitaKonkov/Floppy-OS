@@ -1,25 +1,34 @@
 #!/bin/bash
 
+
+# Clear bin folder and delete floppy.img file
+rm -r floppy.img
+rm -r bin/*
+
+
 # Assemble the bootloader
 nasm -f bin -o bin/bootloader.bin bootloader.asm
-
 # Assemble the os stage
 nasm -f bin -o bin/os.bin os.asm
-
 # Assemble the display stage
 nasm -f bin -o bin/display.bin display.asm
+# Assemble the display stage
+nasm -f bin -o bin/dword.bin dword.asm
+
 
 # Create a blank floppy disk image 2880 * 512 = 1.44MB
 dd if=/dev/zero of=floppy.img bs=512 count=2880
 
+
 # Write the bootloader to the first sector
 dd if=bin/bootloader.bin of=floppy.img conv=notrunc
-
 # Write the second stage to the second sector
 dd if=bin/os.bin of=floppy.img bs=512 seek=1 conv=notrunc
-
 # Write the third stage to the third sector
 dd if=bin/display.bin of=floppy.img bs=512 seek=2 conv=notrunc
+# Write the third stage to the third sector
+dd if=bin/dword.bin of=floppy.img bs=512 seek=3 conv=notrunc
+
 
 if [ "$1" == "-d" ]; then
   echo "Building debug version..."

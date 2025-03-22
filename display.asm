@@ -1,13 +1,16 @@
-
-; display.asm
-org 0x9000
-
+; os.asm
+org 0x7c00 + 512 * 2
+; Initialize segment registers
+xor ax, ax              ; Zero AX register
+mov ds, ax              ; Set DS to 0
+mov es, ax              ; Set ES to 0
+mov ss, ax              ; Set SS to 0
 ; Print a message in real mode
-mov si, display_msg     ; Load message address
+mov si, boot_msg        ; Load message address
 call print_string       ; Call print routine
 
-; Halt the system
-hlt                     ; Halt the CPU
+; Return to bootloader
+jmp 0x7c00 + 0x12 * 2                     ; Return control to the bootloader
 
 ; 16-bit function to print a string
 print_string:
@@ -20,5 +23,6 @@ print_string:
 .done:
     ret
 
-display_msg db 'Welcome to the Display Program!', 0
+boot_msg db 'B1 ', 0
+
 times 510-($-$$) db 0   ; Pad to 510 bytes
