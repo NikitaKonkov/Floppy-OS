@@ -9,8 +9,8 @@ nasm -f bin -o bin/os.bin os.asm
 # Assemble the display stage
 nasm -f bin -o bin/display.bin display.asm
 
-# Create a blank floppy disk image 8192 * 512 = 4MB [4.194.304 BYTE]
-dd if=/dev/zero of=floppy.img bs=512 count=8192
+# Create a blank floppy disk image 2880 * 512 = 1.44MB
+dd if=/dev/zero of=floppy.img bs=512 count=2880
 
 # Write the bootloader to the first sector
 dd if=bin/bootloader.bin of=floppy.img conv=notrunc
@@ -18,6 +18,8 @@ dd if=bin/bootloader.bin of=floppy.img conv=notrunc
 # Write the second stage to the second sector
 dd if=bin/os.bin of=floppy.img bs=512 seek=1 conv=notrunc
 
+# Write the third stage to the third sector
+dd if=bin/display.bin of=floppy.img bs=512 seek=2 conv=notrunc
 
 if [ "$1" == "-d" ]; then
   echo "Building debug version..."

@@ -1,4 +1,4 @@
-; OS
+; os.asm
 org 0x9000
 ; Initialize segment registers
 xor ax, ax              ; Zero AX register
