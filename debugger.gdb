@@ -30,7 +30,7 @@ end
 
 # Read RAM from position A to B
 define ram_read
-    x/8ib 0x7C00
+    x/8xg 0x7C00
 end
 # To read memory in GDB, you can specify the size of the memory units you want to read. The `x` command in GDB allows you to specify the format and size of the memory units. By default, if you don't specify a size, GDB assumes a word size, which is typically 4 bytes on a 32-bit system or 8 bytes on a 64-bit system. However, you can explicitly specify the size you want to read using the size modifiers.
 
@@ -59,6 +59,28 @@ python
 import sys
 import os
 import msvcrt
+
+ram_set = """
+- **Size Modifiers**: The `x` command supports several size modifiers:
+  - `b`: byte (1 byte)
+  - `h`: halfword (2 bytes)
+  - `w`: word (4 bytes)
+  - `g`: giant word (8 bytes)
+
+- **Format Specifiers**: You can also specify the format in which you want the memory to be displayed:
+  - `x`: hexadecimal
+  - `d`: decimal
+  - `u`: unsigned decimal
+  - `o`: octal
+  - `t`: binary
+  - `f`: floating point
+  - `a`: address
+  - `i`: instruction
+  - `c`: character
+  - `s`: string
+"""
+
+format_spec = "xb"
 
 def wait_for_key():
     # Wait for a single key press.
@@ -99,7 +121,15 @@ while True:
         break
     
     elif key == 'x':
-        gdb.execute("ram_read")
+        print(ram_set)
+        print()
+        ram_a = input("start address eg., 0x7C00: ")
+        ram_b = input("length address read: ")
+        n_0 = input("specify format and size? Y/N: ")
+        if n_0 in ["Y","y"]:
+            format_spec = input("eg., xb: ")
+        # REF x/8xg 0x7C00
+        gdb.execute("x/"+ ram_b + format_spec + " " + ram_a)
 
     else:
         print("<| s : step_once | r : show_register | a : show_all_register | c : cls | q : quit | b : set_break |>")
