@@ -7,7 +7,7 @@ set pagination off
 target remote localhost:1234
 
 # Set a breakpoint at the start of the bootloader
-break *0x9000
+break *0x7C00
 
 # Continue
 c

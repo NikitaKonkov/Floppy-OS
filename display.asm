@@ -1,6 +1,6 @@
 
 ; display.asm
-org 0x9000 + 0x0200
+org 0x9000
 
 ; Print a message in real mode
 mov si, display_msg     ; Load message address
