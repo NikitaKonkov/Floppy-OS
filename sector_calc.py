@@ -22,6 +22,10 @@ def main(sector_number):
     print(f"Cylinder: {cylinder}")
     print(f"Head: {head}")
     print(f"Sector: {sector}")
+    if sector_number == 0:
+        print("[bootloader sector]")
+    elif sector_number == 1:
+        print("[operating system sector]")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Calculate CHS values for a given sector number.")

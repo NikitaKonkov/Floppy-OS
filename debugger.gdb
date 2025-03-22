@@ -20,15 +20,39 @@ end
 
 # Define a command to print register status
 define show_register
-
 # Print only general purpose registers (not MMX/floating point)
 info registers rax rbx rcx rdx rsi rdi rbp rsp r8 r9 r10 r11 r12 r13 r14 r15 rip cs ss ds es fs gs
 end
 define show_all_register
-
 # Print all registers
 info registers
 end
+
+# Read RAM from position A to B
+define ram_read
+    x/8ib 0x7C00
+end
+# To read memory in GDB, you can specify the size of the memory units you want to read. The `x` command in GDB allows you to specify the format and size of the memory units. By default, if you don't specify a size, GDB assumes a word size, which is typically 4 bytes on a 32-bit system or 8 bytes on a 64-bit system. However, you can explicitly specify the size you want to read using the size modifiers.
+
+# ### Key Points to Consider for reading RAM
+# 
+# - **Size Modifiers**: The `x` command supports several size modifiers:
+#   - `b`: byte (1 byte)
+#   - `h`: halfword (2 bytes)
+#   - `w`: word (4 bytes)
+#   - `g`: giant word (8 bytes)
+# 
+# - **Format Specifiers**: You can also specify the format in which you want the memory to be displayed:
+#   - `x`: hexadecimal
+#   - `d`: decimal
+#   - `u`: unsigned decimal
+#   - `o`: octal
+#   - `t`: binary
+#   - `f`: floating point
+#   - `a`: address
+#   - `i`: instruction
+#   - `c`: character
+#   - `s`: string
 
 # Python script to listen for key presses (Windows version)
 python
@@ -73,7 +97,14 @@ while True:
 
     elif key == 'q':
         break
+    
+    elif key == 'x':
+        gdb.execute("ram_read")
 
     else:
         print("<| s : step_once | r : show_register | a : show_all_register | c : cls | q : quit | b : set_break |>")
 end
+
+
+
+
