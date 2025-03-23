@@ -7,8 +7,8 @@
 # B2.asm
 
 # Create binary and temporary folder
-mkdir bin
-mkdir temp
+mkdir -p bin
+mkdir -p temp
 
 
 # Clear bin folder and delete floppy.img file
@@ -16,7 +16,7 @@ rm -f floppy.img
 rm -f bin/*
 
 
-# Assemble the bootloader
+# bootloader
 nasm -f bin -o bin/boot.bin boot.asm
 # B0
 nasm -f bin -o bin/B0.bin B0.asm
@@ -41,7 +41,10 @@ dd if=bin/B1.bin of=floppy.img bs=512 seek=2 conv=notrunc
 # B2
 dd if=bin/B2.bin of=floppy.img bs=512 seek=3 conv=notrunc
 # B3
-dd if=bin/B3.bin of=floppy.img bs=512 count=8 seek=4 conv=notrunc
+dd if=bin/B3.bin of=floppy.img bs=512 count=8 seek=4 conv=notrunc # 1/4 PACMAN GAME :)
+
+
+
 
 if [ "$1" == "-d" ]; then
   echo "Building debug version..."

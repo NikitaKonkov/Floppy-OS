@@ -3,12 +3,30 @@ bits 16
 org 0x7c00
 
 start:
+    ; Control flow
+    call keypress
+    mov al, [tracker]
+    cmp al, 0
+    je B0
+    cmp al, 1
+    je B1
+    cmp al, 2
+    je B2
+    cmp al, 3
+    je B3
+
+
+
     ; Initialize the stack pointer (SP) 
     mov ax, 0
     mov ss, ax
-    mov sp, 0x7C00
+    mov sp, 0x9000
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B0.asm
+    B0:
+    mov al, 1
+    add [tracker], al
+    
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
@@ -18,13 +36,16 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    call $+3                        ; Note: I don't want to change this approach
-    cmp bx, ax
-    je B0
+    ; call $+3                        ; Note: I don't want to change this approach
+    ; cmp bx, ax
+    ; je B0
     jmp 0x7c00 + 512 * 1
-    B0:
-    call keypress
+    ; B0:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B1.asm
+    B1:
+    mov al, 1
+    add [tracker], al
+
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
@@ -34,13 +55,16 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    call $+3
-    cmp bx, ax
-    je B1
+    ; call $+3
+    ; cmp bx, ax
+    ; je B1
     jmp 0x7c00 + 512 * 2
-    B1:
-    call keypress
+    ; B1:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B2.asm
+    B2:
+    mov al, 1
+    add [tracker], al
+
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
@@ -50,13 +74,16 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    call $+3
-    cmp bx, ax
-    je B2
+    ; call $+3
+    ; cmp bx, ax
+    ; je B2
     jmp 0x7c00 + 512 * 3
-    B2:
-    call keypress
+    ; B2:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B3.asm
+    B3:
+    mov al, 1
+    add [tracker], al
+
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 8                       ; Number of sectors to read [8]
     mov ch, 0                       ; Cylinder
@@ -66,11 +93,11 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
     
-    call $+3
-    cmp bx, ax
-    je B3
+    ; call $+3
+    ; cmp bx, ax
+    ; je B3
     jmp 0x7c00 + 512 * 4
-    B3:
+    ; B3:
 
 jmp EOF
 
@@ -99,6 +126,12 @@ print_string:
 
 error_msg db 'Disk read error!', 13, 10, 0
 
+tracker db 0
+
+
+EOF:
+    jmp $
+
 ; ======================================================================
 ; Bootloader Signature Block
 ; ======================================================================
@@ -107,17 +140,7 @@ signature_start:
     db " - Created by Nikita Konkov" ; Author information
     db " - Build date: 03/23/2025" ; Build date
     db 0                           ; Null terminator
-
-; Magic number for OS identification
-magic_number:
-    db 0x42, 0x4F, 0x4F, 0x54     ; "BOOT" in ASCII
-    db 0x4D, 0x59, 0x4F, 0x53     ; "MYOS" in ASCII
     
-; Checksum for integrity verification
-checksum:
-    dd 0x12345678                 ; Placeholder for actual checksum
-
-EOF:
-    jmp $
-times 510-($-$$) db 0       ; Fill the rest of the boot sector with zeros
+times 506-($-$$) db 0       ; Fill the rest of the boot sector with zeros
+dd 0xB2775FD9               ; Checksum
 dw 0xaa55                   ; Boot signature (0xAA55)

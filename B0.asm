@@ -10,9 +10,7 @@ mov si, msg        ; Load message address
 call print_string       ; Call print routine
 
 ; Return to bootloader
-pop ax
-mov bx, ax
-jmp ax                    ; Return control to the bootloader
+jmp 0x7c00                    ; Return control to the bootloader
 
 ; 16-bit function to print a string
 print_string:
@@ -27,4 +25,4 @@ print_string:
 
 msg db 'B0 ', 0
 
-times 510-($-$$) db 0   ; Pad to 510 bytes
+times 512-($-$$) db 0   ; Pad to 510 bytes
