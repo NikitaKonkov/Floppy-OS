@@ -1,8 +1,3 @@
-NikitaKonkov: make a comprihensive readme of using msys ucrt64 and qemu to run my bootloader img and explaine my project
-
-Workspace: Collecting workspace informationHere is a comprehensive README for your project:
-
-```markdown
 # Floppy OS Bootloader Project
 
 This project demonstrates a multi-stage bootloader for a floppy disk image. It includes a bootloader and additional stages that are loaded sequentially from the floppy disk. The project is designed to run on an emulated x86 environment using QEMU and can be built and debugged using the MSYS2 UCRT64 environment.
