@@ -6,31 +6,31 @@ start:
     ; Initialize the stack pointer (SP) 
     mov ax, 0
     mov ss, ax
-    mov sp, 0x7C00  ; Or another appropriate address like 0x9000
+    mov sp, 0x7C00
 
-;;; os.asm
-    mov ah, 0x02            ; BIOS function to read sectors
-    mov al, 1               ; Number of sectors to read (adjust this based on the size of os.asm)
-    mov ch, 0               ; Cylinder number (0)
-    mov cl, 2               ; Sector number (2, assuming the second stage starts from the second sector)
-    mov dh, 0               ; Head number (0)
-    mov bx, 0x7c00 + 512    ; Destination buffer address (0x9000, where os.asm will be loaded)
-    int 0x13                ; BIOS interrupt to read from disk
-    jc disk_error           ; If carry flag is set, print error message and hang
+;;; B0.asm
+    mov ah, 0x02                    ; BIOS function to read sectors
+    mov al, 1                       ; Number of sectors to read
+    mov ch, 0                       ; Cylinder
+    mov cl, 2                       ; Sector
+    mov dh, 0                       ; Head
+    mov bx, 0x7c00 + 512 * 1        ; Destination buffer
+    int 0x13                        ; BIOS interrupt to read from disk
+    jc disk_error                   ; If carry flag is set, print error message and hang
 
-    call $+3                ; Note: I don't want to change this approach
+    call $+3                        ; Note: I don't want to change this approach
     cmp bx, ax
     je B0
-    jmp 0x7c00 + 512
+    jmp 0x7c00 + 512 * 1
     B0:
 
-;;; display.asm
+;;; B1.asm
     mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read (adjust this based on the size of os.asm)
-    mov ch, 0                       ; Cylinder number (0)
-    mov cl, 3                       ; Sector number (3, assuming the second stage starts from the third sector)
-    mov dh, 0                       ; Head number (0)
-    mov bx, 0x7c00 + 512 * 2        ; Destination buffer address (0x9000, where os.asm will be loaded)
+    mov al, 1                       ; Number of sectors to read
+    mov ch, 0                       ; Cylinder
+    mov cl, 3                       ; Sector
+    mov dh, 0                       ; Head
+    mov bx, 0x7c00 + 512 * 2        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
@@ -40,9 +40,7 @@ start:
     jmp 0x7c00 + 512 * 2
     B1:
 
-
-
-;;; dword.asm
+;;; B2.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -51,30 +49,25 @@ start:
     mov bx, 0x7c00 + 512 * 3        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
-    jmp 0x7c00 + 512 * 3            ; Jump
+    
+    call $+3
+    cmp bx, ax
+    je B2
+    jmp 0x7c00 + 512 * 3
+    B2:
 
 jmp EOF
-
 
 disk_error:
     mov si, error_msg
     call print_string
-    jmp $      
+    jmp EOF      
 
-; clear:
-;     xor ax, ax
-;     mov ds, ax
-;     mov es, ax
-;     mov ss, ax
-;     mov sp, 0x9000
-;     ret
-;     
-; keypress:
-;     mov ah, 0x00            ; BIOS function to wait for a key press
-;     int 0x16                ; BIOS interrupt for keyboard services
-;     ret
+keypress:
+    mov ah, 0x00            ; BIOS function to wait for a key press
+    int 0x16                ; BIOS interrupt for keyboard services
+    ret
 
-; Simple string printing routine
 print_string:
     push ax
     mov ah, 0x0E        ; BIOS teletype function

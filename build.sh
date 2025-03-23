@@ -1,19 +1,24 @@
 #!/bin/bash
 
+## Naming
+# bootloader.asm
+# B0.asm
+# B1.asm
+# B2.asm
 
 # Clear bin folder and delete floppy.img file
-rm -r floppy.img
-rm -r bin/*
+rm -f floppy.img
+rm -f bin/*
 
 
 # Assemble the bootloader
 nasm -f bin -o bin/bootloader.bin bootloader.asm
 # Assemble the os stage
-nasm -f bin -o bin/os.bin os.asm
+nasm -f bin -o bin/B0.bin B0.asm
 # Assemble the display stage
-nasm -f bin -o bin/display.bin display.asm
+nasm -f bin -o bin/B1.bin B1.asm
 # Assemble the display stage
-nasm -f bin -o bin/dword.bin dword.asm
+nasm -f bin -o bin/B2.bin B2.asm
 
 
 # Create a blank floppy disk image 2880 * 512 = 1.44MB
@@ -23,11 +28,11 @@ dd if=/dev/zero of=floppy.img bs=512 count=2880
 # Write the bootloader to the first sector
 dd if=bin/bootloader.bin of=floppy.img conv=notrunc
 # Write the second stage to the second sector
-dd if=bin/os.bin of=floppy.img bs=512 seek=1 conv=notrunc
+dd if=bin/B0.bin of=floppy.img bs=512 seek=1 conv=notrunc
 # Write the third stage to the third sector
-dd if=bin/display.bin of=floppy.img bs=512 seek=2 conv=notrunc
+dd if=bin/B1.bin of=floppy.img bs=512 seek=2 conv=notrunc
 # Write the third stage to the third sector
-dd if=bin/dword.bin of=floppy.img bs=512 seek=3 conv=notrunc
+dd if=bin/B2.bin of=floppy.img bs=512 seek=3 conv=notrunc
 
 
 if [ "$1" == "-d" ]; then
