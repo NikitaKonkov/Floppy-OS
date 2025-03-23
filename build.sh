@@ -6,6 +6,11 @@
 # B1.asm
 # B2.asm
 
+# Create binary and temporary folder
+mkdir bin
+mkdir temp
+
+
 # Clear bin folder and delete floppy.img file
 rm -f floppy.img
 rm -f bin/*
