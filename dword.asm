@@ -22,7 +22,7 @@ second_stage:
     mov cr0, eax
     
     ; Far jump to flush the pipeline and load CS with 32-bit segment
-    jmp 0x08:protected_mode
+    jmp protected_mode
 
 ; GDT
 gdt_start:
