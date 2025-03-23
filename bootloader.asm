@@ -11,11 +11,14 @@ start:
     mov bx, 0x7c00 + 512    ; Destination buffer address (0x9000, where os.asm will be loaded)
     int 0x13                ; BIOS interrupt to read from disk
     jc disk_error           ; If carry flag is set, print error message and hang
-    jmp 0x7c00 + 512        ; Jump to the loaded os.asm at address 0x9000
 
+    call $+3
+    cmp bx, ax
+    je B0
+    jmp 0x7c00 + 512
+    B0:
 
-
-;;; 0x7c14
+;;; 0x7c16
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read (adjust this based on the size of os.asm)
     mov ch, 0                       ; Cylinder number (0)
@@ -24,11 +27,16 @@ start:
     mov bx, 0x7c00 + 512 * 2        ; Destination buffer address (0x9000, where os.asm will be loaded)
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
-    jmp 0x7c00 + 512 * 2            ; Jump to the loaded os.asm at address 0x9000
+
+    call $+3
+    cmp bx, ax
+    je B1
+    jmp 0x7c00 + 512 * 2
+    B1:
 
 
 
-;;; 0x7c28
+;;; 0x7c2a
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -38,6 +46,9 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
     jmp 0x7c00 + 512 * 3            ; Jump
+
+jmp EOF
+
 
 disk_error:
     mov si, error_msg
@@ -73,5 +84,6 @@ print_string:
 
 error_msg db 'Disk read error!', 13, 10, 0
 
+EOF:
 times 510-($-$$) db 0       ; Fill the rest of the boot sector with zeros
-dw 0xaa55                  ; Boot signature (0xAA55)
+dw 0xaa55                   ; Boot signature (0xAA55)

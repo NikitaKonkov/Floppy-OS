@@ -92,7 +92,7 @@ while True:
         length = input("Length of memory to read: ")
         specify_format = input("Specify format and size? (Y/N): ")
         if specify_format.lower() == "y":
-            default_format = input("Enter format and size (e.g., xb): ")
+            default_format = input("Enter format and size (e.g., ib): ")
         gdb.execute(f"x/{length}{default_format} {start_address}")
 
     elif key == 'w':
