@@ -125,5 +125,5 @@ signature_start:
     db 0                           ; Null terminator
     
 times 506-($-$$) db 0       ; Fill the rest of the boot sector with zeros
-dd 0xB2775FD9               ; Checksum
+dw 0xd400,0xd400               ; Checksum
 dw 0xaa55                   ; Boot signature (0xAA55)
