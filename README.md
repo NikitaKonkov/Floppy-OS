@@ -176,6 +176,3 @@ Here is an overview of the project's file structure:
 ## Acknowledgments
 
 This project was created by Nikita Konkov as a learning exercise in x86 assembly and bootloader development. It is inspired by the structure and functionality of legacy bootloaders used in early operating systems.
-
----
-```
