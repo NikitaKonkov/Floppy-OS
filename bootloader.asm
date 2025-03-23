@@ -8,7 +8,7 @@ start:
     mov ss, ax
     mov sp, 0x7C00
 
-;;; B0.asm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B0.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -24,7 +24,7 @@ start:
     jmp 0x7c00 + 512 * 1
     B0:
 
-;;; B1.asm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B1.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -40,7 +40,7 @@ start:
     jmp 0x7c00 + 512 * 2
     B1:
 
-;;; B2.asm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B2.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -49,12 +49,28 @@ start:
     mov bx, 0x7c00 + 512 * 3        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
-    
+
     call $+3
     cmp bx, ax
     je B2
     jmp 0x7c00 + 512 * 3
     B2:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B3.asm
+    mov ah, 0x02                    ; BIOS function to read sectors
+    mov al, 8                       ; Number of sectors to read
+    mov ch, 0                       ; Cylinder
+    mov cl, 5                       ; Sector
+    mov dh, 0                       ; Head
+    mov bx, 0x7c00 + 512 * 4        ; Destination buffer
+    int 0x13                        ; BIOS interrupt to read from disk
+    jc disk_error                   ; If carry flag is set, print error message and hang
+    
+    call $+3
+    cmp bx, ax
+    je B3
+    jmp 0x7c00 + 512 * 4
+    B3:
 
 jmp EOF
 
