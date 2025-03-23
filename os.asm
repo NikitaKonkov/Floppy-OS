@@ -6,11 +6,11 @@ mov ds, ax              ; Set DS to 0
 mov es, ax              ; Set ES to 0
 mov ss, ax              ; Set SS to 0
 ; Print a message in real mode
-mov si, boot_msg        ; Load message address
+mov si, msg        ; Load message address
 call print_string       ; Call print routine
 
 ; Return to bootloader
-jmp 0x7c00 + 0x12 * 1                     ; Return control to the bootloader
+jmp 0x7c14                     ; Return control to the bootloader
 
 ; 16-bit function to print a string
 print_string:
@@ -23,6 +23,6 @@ print_string:
 .done:
     ret
 
-boot_msg db 'B0 ', 0
+msg db 'B0 ', 0
 
 times 510-($-$$) db 0   ; Pad to 510 bytes

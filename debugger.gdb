@@ -39,7 +39,7 @@ memory_info = """
   - `g`: giant word (8 bytes)
 """
 
-default_format = "xb"
+default_format = "ib"
 
 def wait_for_key():
     """Wait for a single key press."""
@@ -83,7 +83,7 @@ while True:
     elif key == 'q':
         break
     
-    elif key == 'x':
+    elif key == 'm':
         print(memory_info)
         print()
         start_address = input("Start address (press Enter for 0x7C00): ")
