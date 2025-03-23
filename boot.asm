@@ -3,6 +3,7 @@ bits 16
 org 0x7c00
 
 start:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; INIT
     ; Control flow
     call keypress
     mov al, [tracker]
@@ -14,8 +15,6 @@ start:
     je B2
     cmp al, 3
     je B3
-
-
 
     ; Initialize the stack pointer (SP) 
     mov ax, 0
@@ -36,11 +35,7 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    ; call $+3                        ; Note: I don't want to change this approach
-    ; cmp bx, ax
-    ; je B0
     jmp 0x7c00 + 512 * 1
-    ; B0:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B1.asm
     B1:
     mov al, 1
@@ -55,11 +50,7 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    ; call $+3
-    ; cmp bx, ax
-    ; je B1
     jmp 0x7c00 + 512 * 2
-    ; B1:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B2.asm
     B2:
     mov al, 1
@@ -74,11 +65,7 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
 
-    ; call $+3
-    ; cmp bx, ax
-    ; je B2
     jmp 0x7c00 + 512 * 3
-    ; B2:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B3.asm
     B3:
     mov al, 1
@@ -93,11 +80,7 @@ start:
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
     
-    ; call $+3
-    ; cmp bx, ax
-    ; je B3
     jmp 0x7c00 + 512 * 4
-    ; B3:
 
 jmp EOF
 
