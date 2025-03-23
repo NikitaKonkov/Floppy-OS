@@ -179,5 +179,3 @@ This project was created by Nikita Konkov as a learning exercise in x86 assembly
 
 ---
 ```
-
-This README provides a detailed explanation of your project, including its purpose, setup, and usage. Let me know if you'd like to add or modify anything!
