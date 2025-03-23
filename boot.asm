@@ -10,9 +10,9 @@ start:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B0.asm
     mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read
+    mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
-    mov cl, 2                       ; Sector
+    mov cl, 2                       ; Sector [2]
     mov dh, 0                       ; Head
     mov bx, 0x7c00 + 512 * 1        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
@@ -23,12 +23,12 @@ start:
     je B0
     jmp 0x7c00 + 512 * 1
     B0:
-
+    call keypress
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B1.asm
     mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read
+    mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
-    mov cl, 3                       ; Sector
+    mov cl, 3                       ; Sector [3]
     mov dh, 0                       ; Head
     mov bx, 0x7c00 + 512 * 2        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
@@ -39,12 +39,12 @@ start:
     je B1
     jmp 0x7c00 + 512 * 2
     B1:
-
+    call keypress
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B2.asm
     mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read
+    mov al, 1                       ; Number of sectors to read [1]
     mov ch, 0                       ; Cylinder
-    mov cl, 4                       ; Sector
+    mov cl, 4                       ; Sector [4]
     mov dh, 0                       ; Head
     mov bx, 0x7c00 + 512 * 3        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
@@ -55,12 +55,12 @@ start:
     je B2
     jmp 0x7c00 + 512 * 3
     B2:
-
+    call keypress
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B3.asm
     mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 8                       ; Number of sectors to read
+    mov al, 8                       ; Number of sectors to read [8]
     mov ch, 0                       ; Cylinder
-    mov cl, 5                       ; Sector
+    mov cl, 5                       ; Sector [5]
     mov dh, 0                       ; Head
     mov bx, 0x7c00 + 512 * 4        ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk

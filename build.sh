@@ -12,7 +12,7 @@ rm -f bin/*
 
 
 # Assemble the bootloader
-nasm -f bin -o bin/bootloader.bin bootloader.asm
+nasm -f bin -o bin/boot.bin boot.asm
 # B0
 nasm -f bin -o bin/B0.bin B0.asm
 # B1
@@ -28,7 +28,7 @@ dd if=/dev/zero of=floppy.img bs=512 count=2880
 
 
 # Write the bootloader to the first sector
-dd if=bin/bootloader.bin of=floppy.img conv=notrunc
+dd if=bin/boot.bin of=floppy.img conv=notrunc
 # B0
 dd if=bin/B0.bin of=floppy.img bs=512 seek=1 conv=notrunc
 # B1
