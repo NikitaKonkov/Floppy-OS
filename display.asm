@@ -1,4 +1,4 @@
-; os.asm
+; display.asm
 org 0x7c00 + 512 * 2
 ; Initialize segment registers
 xor ax, ax              ; Zero AX register

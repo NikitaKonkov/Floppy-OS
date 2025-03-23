@@ -3,6 +3,12 @@ bits 16
 org 0x7c00
 
 start:
+    ; Initialize the stack pointer (SP) 
+    mov ax, 0
+    mov ss, ax
+    mov sp, 0x7C00  ; Or another appropriate address like 0x9000
+
+;;; os.asm
     mov ah, 0x02            ; BIOS function to read sectors
     mov al, 1               ; Number of sectors to read (adjust this based on the size of os.asm)
     mov ch, 0               ; Cylinder number (0)
@@ -12,13 +18,13 @@ start:
     int 0x13                ; BIOS interrupt to read from disk
     jc disk_error           ; If carry flag is set, print error message and hang
 
-    call $+3
+    call $+3                ; Note: I don't want to change this approach
     cmp bx, ax
     je B0
     jmp 0x7c00 + 512
     B0:
 
-;;; 0x7c16
+;;; display.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read (adjust this based on the size of os.asm)
     mov ch, 0                       ; Cylinder number (0)
@@ -36,7 +42,7 @@ start:
 
 
 
-;;; 0x7c2a
+;;; dword.asm
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder
@@ -84,6 +90,25 @@ print_string:
 
 error_msg db 'Disk read error!', 13, 10, 0
 
+; ======================================================================
+; Bootloader Signature Block
+; ======================================================================
+signature_start:
+    db "bootloader v0.1"                ; OS name and version
+    db " - Created by Nikita Konkov" ; Author information
+    db " - Build date: 03/23/2025" ; Build date
+    db 0                           ; Null terminator
+
+; Magic number for OS identification
+magic_number:
+    db 0x42, 0x4F, 0x4F, 0x54     ; "BOOT" in ASCII
+    db 0x4D, 0x59, 0x4F, 0x53     ; "MYOS" in ASCII
+    
+; Checksum for integrity verification
+checksum:
+    dd 0x12345678                 ; Placeholder for actual checksum
+
 EOF:
+    jmp $
 times 510-($-$$) db 0       ; Fill the rest of the boot sector with zeros
 dw 0xaa55                   ; Boot signature (0xAA55)

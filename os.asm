@@ -27,4 +27,4 @@ print_string:
 
 msg db 'B0 ', 0
 
-times 512-($-$$) db 0   ; Pad to 510 bytes
+times 510-($-$$) db 0   ; Pad to 510 bytes
