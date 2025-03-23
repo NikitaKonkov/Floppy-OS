@@ -1,6 +1,10 @@
 ; os.asm
 org 0x7c00 + 512 * 3
 ; Initialize segment registers
+
+mov eax, 0x3242 ;little endian test
+mov [msg], eax
+
 xor ax, ax              ; Zero AX register
 mov ds, ax              ; Set DS to 0
 mov es, ax              ; Set ES to 0

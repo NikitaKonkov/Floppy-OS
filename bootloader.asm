@@ -15,7 +15,7 @@ start:
 
 
 
-;;; 0x7c16
+;;; 0x7c14
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read (adjust this based on the size of os.asm)
     mov ch, 0                       ; Cylinder number (0)
@@ -28,7 +28,7 @@ start:
 
 
 
-;;; 0x7c2a
+;;; 0x7c28
     mov ah, 0x02                    ; BIOS function to read sectors
     mov al, 1                       ; Number of sectors to read
     mov ch, 0                       ; Cylinder

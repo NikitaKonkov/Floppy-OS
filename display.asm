@@ -1,28 +1,45 @@
-; os.asm
 org 0x7c00 + 512 * 2
-; Initialize segment registers
-xor ax, ax              ; Zero AX register
-mov ds, ax              ; Set DS to 0
-mov es, ax              ; Set ES to 0
-mov ss, ax              ; Set SS to 0
-; Print a message in real mode
-mov si, msg        ; Load message address
-call print_string       ; Call print routine
+
+; Set up stack
+mov ax, 0
+mov ss, ax
+mov sp, 0x7c00
+
+; Save boot drive number
+mov [boot_drive], dl
+
+; Initialize 32-bit video mode
+call init_video_mode
+
+; Print a message
+mov si, msg
+call print_string
 
 ; Return to bootloader
-jmp 0x7C28                    ; Return control to the bootloader
+jmp 0x7C28
 
 ; 16-bit function to print a string
 print_string:
-    lodsb               ; Load byte from SI into AL and increment SI
-    or al, al           ; Check if AL is 0 (end of string)
-    jz .done            ; If zero, we're done
-    mov ah, 0x0E        ; BIOS teletype function
-    int 0x10            ; Call BIOS
-    jmp print_string    ; Repeat for next character
+    pusha
+    mov ah, 0x0E
+.loop:
+    lodsb
+    or al, al
+    jz .done
+    int 0x10
+    jmp .loop
 .done:
+    popa
     ret
 
+; Initialize 32-bit video mode with highest resolution
+init_video_mode:
+    mov ax, 0x4F02
+    mov bx, 0x4118  ; 1024x768 32-bit color
+    int 0x10
+    ret
+
+boot_drive db 0
 msg db 'B1 ', 0
 
-times 510-($-$$) db 0   ; Pad to 510 bytes
+times 510-($-$$) db 0
