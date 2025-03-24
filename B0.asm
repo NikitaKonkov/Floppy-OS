@@ -1,9 +1,9 @@
 ; os.asm
-org 0x7c00 + 512
+org 0x7c00 + 512 * 2
 
 ; Print a message in real mode
-; mov si, msg        ; Load message address
-; call print_string       ; Call print routine
+mov si, msg        ; Load message address
+call print_string       ; Call print routine
 
 
 
@@ -23,12 +23,12 @@ generator:
     mov dx, [si]
     inc si
     add dx, [checksum]
-    xor dx, 0xF1A9
+    imul dx, 13
     add [checksum], dx
     loop generator ; 0x7e15
 
 
-cmp dx, [0x7c00 + 510 - 8] 
+cmp dx, [0x7c00 + 510 - 6] 
 jne sumend
 mov si, sum        ; Load message address
 call print_string       ; Call print routine

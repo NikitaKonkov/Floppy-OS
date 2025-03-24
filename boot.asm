@@ -3,84 +3,42 @@ bits 16
 org 0x7c00
 
 start:
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; INIT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; INIT & Control
     ; Control flow
     call keypress
-    mov al, [tracker]
-    cmp al, 0
-    je B0
-    cmp al, 1
-    je B1
-    cmp al, 2
-    je B2
-    cmp al, 3
-    je B3
 
+
+    mov al, [flag0]
+    cmp al, 1
+    je launch
+    inc al
+    mov [flag0], al
     ; Initialize the stack pointer (SP) 
     mov ax, 0
     mov ss, ax
     mov sp, 0x9000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; BUILD
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B0.asm
-    B0:
-    mov al, 1
-    add [tracker], al
-    
-    mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read [1]
-    mov ch, 0                       ; Cylinder
-    mov cl, 2                       ; Sector [2]
+    mov si, 0
+build:
+    mov ax, [biread + si]           ; BIOS function to read sectors - Number of sectors to read
+    mov cx, [cylins + si]           ; Cylinder - Sector
     mov dh, 0                       ; Head
-    mov bx, 0x7c00 + 512 * 1        ; Destination buffer
+    mov bx, [address + si]          ; Destination buffer
     int 0x13                        ; BIOS interrupt to read from disk
     jc disk_error                   ; If carry flag is set, print error message and hang
+    add si, 2
+    cmp si, 8
+    jne build 
 
-    jmp 0x7c00 + 512 * 1
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B1.asm
-    B1:
-    mov al, 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EXEC
+
+launch:
+    mov si, [tracker]
+    mov al, 2
     add [tracker], al
+    jmp [address + si]
 
-    mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read [1]
-    mov ch, 0                       ; Cylinder
-    mov cl, 3                       ; Sector [3]
-    mov dh, 0                       ; Head
-    mov bx, 0x7c00 + 512 * 2        ; Destination buffer
-    int 0x13                        ; BIOS interrupt to read from disk
-    jc disk_error                   ; If carry flag is set, print error message and hang
-
-    jmp 0x7c00 + 512 * 2
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B2.asm
-    B2:
-    mov al, 1
-    add [tracker], al
-
-    mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 1                       ; Number of sectors to read [1]
-    mov ch, 0                       ; Cylinder
-    mov cl, 4                       ; Sector [4]
-    mov dh, 0                       ; Head
-    mov bx, 0x7c00 + 512 * 3        ; Destination buffer
-    int 0x13                        ; BIOS interrupt to read from disk
-    jc disk_error                   ; If carry flag is set, print error message and hang
-
-    jmp 0x7c00 + 512 * 3
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; B3.asm
-    B3:
-    mov al, 1
-    add [tracker], al
-
-    mov ah, 0x02                    ; BIOS function to read sectors
-    mov al, 8                       ; Number of sectors to read [8]
-    mov ch, 0                       ; Cylinder
-    mov cl, 5                       ; Sector [5]
-    mov dh, 0                       ; Head
-    mov bx, 0x7c00 + 512 * 4        ; Destination buffer
-    int 0x13                        ; BIOS interrupt to read from disk
-    jc disk_error                   ; If carry flag is set, print error message and hang
-    
-    jmp 0x7c00 + 512 * 4
 
 jmp EOF
 
@@ -107,14 +65,15 @@ print_string:
     pop ax
     ret
 
-error_msg db 'Disk read error!', 13, 10, 0
-
-tracker db 0
-
-
 EOF:
     jmp $
 
+error_msg db 'Disk read error!', 13, 10, 0
+tracker dw 0
+biread dw 0x0201 , 0x0201 , 0x0201 , 0x0208
+address dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5
+cylins dw 0x0002 , 0x0003 , 0x0004 , 0x0005
+flag0 db 0
 ; ======================================================================
 ; Bootloader Signature Block
 ; ======================================================================

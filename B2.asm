@@ -1,5 +1,5 @@
 ; dword.asm
-org 0x7c00 + 512 * 3
+org 0x7c00 + 512 * 4
 ; Initialize segment registers
 mov eax, 0x3242 ;little endian test
 mov [msg], eax

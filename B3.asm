@@ -1,5 +1,5 @@
 ; game.asm
-org 0x7c00 + 512 * 4
+org 0x7c00 + 512 * 5
      mov ah, 0x48  ; Function number for memory allocation
      mov bx, 3000  ; Number of paragraphs (16-byte blocks) to allocate
      int 0x21      ; Call DOS interrupt
