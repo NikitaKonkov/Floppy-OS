@@ -11,7 +11,7 @@ org 0x7c00
     mov ax, 0
     mov ss, ax
     mov sp, 0x9000                 ; Initialize the stack pointer (SP) 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; BUILD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; BUILDER
     mov si, 0
 build:
     mov ax, [biread + si]          ; BIOS function to read sectors - Number of sectors to read
@@ -23,7 +23,7 @@ build:
     add si, 2
     cmp si, 8
     jne build 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EXEC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EXECUTER
 launch:
     mov si, [tracker]
     mov al, 2
@@ -31,7 +31,7 @@ launch:
     jmp [address + si]
 
 jmp EOF
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 disk_error:
     mov si, error_msg
     call print_string
@@ -55,21 +55,20 @@ done:
     pop ax
     ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; DATA
-error_msg db 'Disk read error!', 13, 10, 0
-tracker dw 0
-biread dw 0x0201 , 0x0201 , 0x0201 , 0x0208
-address dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5
-cylins dw 0x0002 , 0x0003 , 0x0004 , 0x0005
-flag0 db 0
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGN
-signature_start:
-db "bootloader v0.1"               ; OS name and version
+tracker     dw 0
+flag0       db 0
+biread      dw 0x0201           , 0x0201           , 0x0201           , 0x0208
+cylins      dw 0x0002           , 0x0003           , 0x0004           , 0x0005
+address     dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5
+error_msg   db 'Disk read error!', 13, 10, 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGNATUR
+db "bootloader v0.3"               ; OS name and version
 db "- Created by Nikita Konkov"    ; Author information
 db "- Build date: 03/23/2025"      ; Build date
 db 0                               ; Null terminator
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 EOF:
     jmp $
-times 506-($-$$) db 0              ; Fill the rest of the boot sector with zeros
-dw 0x0000,0x0000                   ; Checksum
+times 508-($-$$) db 0              ; Fill the rest of the boot sector with zeros
+dw 0x3C1C                               ; Checksum
 dw 0xaa55                          ; Boot signature (0xAA55)
