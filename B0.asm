@@ -13,31 +13,10 @@ call print_string       ; Call print routine
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Checksum Generator & Checker
-push dx
-
-mov si, 0x7c00
-mov cx, 512 - 6
-xor dx, dx
-generator:
-    mov dx, [si]
-    inc si
-    add dx, [checksum]
-    imul dx, 13
-    add [checksum], dx
-    loop generator ; 0x7e15
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Checksum Generator & Checker
 
 
-cmp dx, [0x7c00 + 510 - 6] 
-jne sumend
-mov si, sum        ; Load message address
-call print_string       ; Call print routine
-
-sumend:
-
-
-pop dx
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
