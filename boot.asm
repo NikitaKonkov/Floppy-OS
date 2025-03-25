@@ -10,7 +10,7 @@ org 0x7c00
     mov [flag0], al
     mov ax, 0
     mov ss, ax
-    mov sp, 0x9000                 ; Initialize the stack pointer (SP) 
+    mov sp, 0x7c00 + 512 * 2       ; Initialize the stack pointer (SP) 512 bytes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; BUILDER
     mov si, 0
 build:
@@ -29,7 +29,6 @@ launch:
     mov al, 2
     add [tracker], al
     jmp [address + si]
-
 jmp EOF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 disk_error:
@@ -60,9 +59,9 @@ flag0       db 0
 biread      dw 0x0201           , 0x0201           , 0x0201           , 0x0208
 cylins      dw 0x0002           , 0x0003           , 0x0004           , 0x0005
 address     dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5
-error_msg   db 'Disk read error!', 13, 10, 0
+error_msg   db 'Disk read error!', 0x0D, 0x0A, 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGNATUR
-db "bootloader v0.3"               ; OS name and version
+db "bootloader v0.3"               ; Name and version
 db "- Created by Nikita Konkov"    ; Author information
 db "- Build date: 03/23/2025"      ; Build date
 db 0                               ; Null terminator
@@ -70,5 +69,5 @@ db 0                               ; Null terminator
 EOF:
     jmp $
 times 508-($-$$) db 0              ; Fill the rest of the boot sector with zeros
-dw 0x3C1C                               ; Checksum
+dw 0x3C0C                          ; Checksum
 dw 0xaa55                          ; Boot signature (0xAA55)

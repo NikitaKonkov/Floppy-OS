@@ -25,6 +25,8 @@ print_string:
 .done:
     ret
 
-msg db 'XX ', 0
+msg db 'XX ', 0x0D, 0x0A, 0
 
-times 512-($-$$) db 0   ; Pad to 510 bytes
+times 508-($-$$) db 0          ; Pad to 510 bytes
+dw 0xE4D5
+dw 0xE4D5
