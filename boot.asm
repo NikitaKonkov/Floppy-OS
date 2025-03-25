@@ -10,7 +10,7 @@ org 0x7c00
     mov [flag0], al
     mov ax, 0
     mov ss, ax
-    mov sp, 0x7c00 + 512 * 2       ; Initialize the stack pointer (SP) 512 bytes
+    mov sp, 0xF000                 ; Initialize the stack pointer (SP) 512 bytes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; BUILDER
     mov si, 0
 build:
@@ -69,5 +69,5 @@ db 0                               ; Null terminator
 EOF:
     jmp $
 times 508-($-$$) db 0              ; Fill the rest of the boot sector with zeros
-dw 0x3C0C                          ; Checksum
+dw 0x3C7C                          ; Checksum
 dw 0xaa55                          ; Boot signature (0xAA55)

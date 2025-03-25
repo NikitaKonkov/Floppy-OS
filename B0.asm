@@ -5,7 +5,12 @@ org 0x7c00 + 512 * 2
     call print_string          ; Call print routine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CHECKSUM
     pusha
-    mov si, 0x7c00
+
+checkall:
+    mov ax, 1
+    add [count], ax
+
+    mov si, [address]
     mov ax, 0
     mov bx, 0
     mov cx, 254
@@ -16,17 +21,25 @@ generate:
     loop generate
 
     mov [hash], bx
-    popa
+
     mov ax, [hash]
     call print_hex
     mov ax, [hash]
-    cmp ax, [0x7c00+508]
+    cmp ax, [address + 508]
     jne exit
 
-    mov si, ok                ; Load message address
-    call print_string          ; Call print routine
+    mov si, ok                 ; Load message address
+    call print_string          ; Print OK if checksum is correct
 
-    exit:
+
+exit:
+    mov ax, 512
+    add [address], ax
+    mov ax, 1                  ; Blocks to checksum
+    cmp [count], ax
+    jne checkall
+    
+    popa
     jmp 0x7c00                 ; Return control to the bootloader
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 print_string:                  ; mov si, STRING TO PRINT
@@ -69,8 +82,9 @@ print_hex_char:
 msg db 'B0 ', 0x0D, 0x0A, 0
 ok db ' OK', 0x0D, 0x0A, 0
 hash dw 0x0000
+count dw 0
 ;;;;;;;;;;;; BOOT  ; STACK       ; CHECKSUM        ; B1              ; B2
-addresses dw 0x7c00, 0x7c00 + 512, 0x7c00 + 512 * 2, 0x7c00 + 512 * 3, 0x7c00 + 512 * 4
+address dw 0x7C00
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
 dw 0xE4D5
