@@ -56,16 +56,13 @@ hash_print:
     jne hash_print
 
 
+    mov si, nl
+    call print_string
 
 
 
-mov si, nl
-call print_string
-
-
-
-mov bx, 0x7c00 + 508 - 512
-mov cx, 7
+    mov bx, 0x7c00 + 508 - 512
+    mov cx, 7
 
 check_hash:
     mov si, cx
@@ -79,15 +76,16 @@ check_hash:
     add bx, 512
 
     cmp [bx], dx
+    jne not_ckeck
+    
+    cmp [bx], dx
     je ok_ckeck
 
-    cmp [bx], dx
-    jne not_ckeck
 
 
 ou:    
-mov si, nl
-call print_string
+    mov si, nl
+    call print_string
 
 popa
     jmp 0x7c00     
@@ -155,8 +153,8 @@ hash times (10) dw 0x0000
 blocks db 20
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0x4AF7
-dw 0x4AF7
+dw 0xE7BC
+dw 0xE7BC
 ;;;;;;;;;;;;;;; The solution below was a pure brain tumor and 
 ;;;;;;;;;;;;;;; I let it slide to the abyse here, make it better if you can!!!!!
 ;     pusha
