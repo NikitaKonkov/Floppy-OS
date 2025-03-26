@@ -683,4 +683,6 @@ walking_rout:
             xor bx, bx
     ret
 bot_speed dw 29
-times 4096-($-$$) db 0   ; Pad to 510 bytes
+times 4092-($-$$) db 0   ; Pad to 510 bytes
+dw 0x1122
+dw 0x1122

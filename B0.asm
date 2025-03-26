@@ -4,46 +4,94 @@ org 0x7c00 + 512 * 2
     mov si, msg                ; Load message address
     call print_string          ; Call print routine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CHECKSUM
-    pusha
-
-checkall:
-    mov ax, 1
-    add [count], ax
-
-    mov si, [address]
-    mov ax, 0
-    mov bx, 0
-    mov cx, 254
-
-generate:
-    lodsw  
+pusha
+cld
+mov si, 0x7C00
+mov cx, 254                    ; bootloader
+mov bx, 0
+boot:
+    lodsw
     xor bx, ax
-    loop generate
-
-    mov [hash], bx
-
-    mov ax, [hash]
+    loop boot
+mov [hash + 10], bx
+mov cx, 254                    ; empty
+empty:
+    lodsw
+    xor bx, ax
+    loop empty
+mov [hash + 8], bx
+mov cx, 254                    ; checksum
+check:
+    lodsw
+    xor bx, ax
+    loop check
+mov [hash + 6], bx
+mov cx, 254                    ; B1
+B1:
+    lodsw
+    xor bx, ax
+    loop B1
+mov [hash + 4], bx
+mov cx, 254                    ; B2
+B2:
+    lodsw
+    xor bx, ax
+    loop B2
+mov [hash + 2], bx
+mov cx, 2046                   ; pacman
+pacman:
+    lodsw
+    xor bx, ax
+    loop pacman
+mov [hash], bx
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CHECKER
+mov si, 10                      ; Print all hashes
+mov bx, 6
+hash_print:
+    mov ax, [hash + si]
+    sub si, 2
     call print_hex
-    mov ax, [hash]
-    cmp ax, [address + 508]
-    jne exit
-
-    mov si, ok                 ; Load message address
-    call print_string          ; Print OK if checksum is correct
+    dec bx
+    cmp bx, 0
+    jne hash_print
 
 
-exit:
-    mov ax, 512
-    add [address], ax
-    mov ax, 1                  ; Blocks to checksum
-    cmp [count], ax
-    jne checkall
+
+
+
+mov si, nl
+call print_string
+
+
+
+mov bx, 0x7c00 + 508
+mov cx, 6
+
+check_hash:
+    mov si, cx
+    imul si, 2 
+    mov dx, [hash + si -2]
+    cmp [bx], dx
+    je ok_ckeck
     
-    popa
-    jmp 0x7c00                 ; Return control to the bootloader
+mov si, nl
+call print_string
+
+popa
+    jmp 0x7c00     
+
+ok_ckeck:
+    add bx, 512
+    mov si, ok
+    call print_string
+    loop check_hash
+
+
+
+
+            ; Return control to the bootloader
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 print_string:                  ; mov si, STRING TO PRINT
-    push ax
     mov ah, 0x0E               ; BIOS teletype function
 pchar:
     lodsb                      ; Load byte from SI into AL and increment SI
@@ -52,10 +100,9 @@ pchar:
     int 0x10                   ; Call BIOS
     jmp pchar                  ; Repeat for next character
 done:
-    pop ax
     ret
 
-print_hex:
+print_hex:                     ; Mov ax, PRINT HEX
     pusha                      ; Save all registers
     mov cx, 4                  ; We have 4 nibbles to process
     mov dx, ax                 ; Save original value in DX
@@ -80,12 +127,51 @@ print_hex_char:
     ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; DATA
 msg db 'B0 ', 0x0D, 0x0A, 0
-ok db ' OK', 0x0D, 0x0A, 0
-hash dw 0x0000
+nl db 0x0D, 0x0A, 0
+ok db 'OK   '
 count dw 0
-;;;;;;;;;;;; BOOT  ; STACK       ; CHECKSUM        ; B1              ; B2
 address dw 0x7C00
+hash times (10) dw 0x0000
+blocks db 20
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0xE4D5
-dw 0xE4D5
+dw 0xAF2F
+dw 0xAF2F
+;;;;;;;;;;;;;;; The solution below was a pure brain tumor and 
+;;;;;;;;;;;;;;; I let it slide to the abyse here, make it better if you can!!!!!
+;     pusha
+; 
+; checkall:
+;     mov ax, 1
+;     add [count], ax
+; 
+;     mov si, [address]
+;     mov ax, 0
+;     mov bx, 0
+;     mov cx, 254
+; 
+; generate:
+;     lodsw  
+;     xor bx, ax
+;     loop generate
+; 
+;     mov [hash], bx
+; 
+;     mov ax, [hash]
+;     call print_hex
+;     mov ax, [hash]
+;     cmp ax, [address + 508]
+;     jne exit
+; 
+;     mov si, ok                 ; Load message address
+;     call print_string          ; Print OK if checksum is correct
+; 
+; 
+; exit:
+;     mov ax, 512
+;     add [address], ax
+;     mov ax, 1                  ; Blocks to checksum
+;     cmp [count], ax
+;     jne checkall
+;     
+;     popa
