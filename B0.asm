@@ -64,16 +64,28 @@ call print_string
 
 
 
-mov bx, 0x7c00 + 508
-mov cx, 6
+mov bx, 0x7c00 + 508 - 512
+mov cx, 7
 
 check_hash:
     mov si, cx
     imul si, 2 
-    mov dx, [hash + si -2]
+    mov dx, [hash + si - 4]
+
+    
+    cmp cx, 1
+    je ou
+
+    add bx, 512
+
     cmp [bx], dx
     je ok_ckeck
-    
+
+    cmp [bx], dx
+    jne not_ckeck
+
+
+ou:    
 mov si, nl
 call print_string
 
@@ -81,17 +93,23 @@ popa
     jmp 0x7c00     
 
 ok_ckeck:
-    add bx, 512
+    dec cx
     mov si, ok
     call print_string
-    loop check_hash
+    jmp check_hash
 
+not_ckeck:
+    dec cx
+    mov si, no
+    call print_string
+    jmp check_hash
 
 
 
             ; Return control to the bootloader
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 print_string:                  ; mov si, STRING TO PRINT
+    push ax
     mov ah, 0x0E               ; BIOS teletype function
 pchar:
     lodsb                      ; Load byte from SI into AL and increment SI
@@ -100,6 +118,7 @@ pchar:
     int 0x10                   ; Call BIOS
     jmp pchar                  ; Repeat for next character
 done:
+    pop ax
     ret
 
 print_hex:                     ; Mov ax, PRINT HEX
@@ -128,15 +147,16 @@ print_hex_char:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; DATA
 msg db 'B0 ', 0x0D, 0x0A, 0
 nl db 0x0D, 0x0A, 0
-ok db 'OK   '
+ok db 'OK   ',0
+no db 'NOT  ',0
 count dw 0
 address dw 0x7C00
 hash times (10) dw 0x0000
 blocks db 20
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0xAF2F
-dw 0xAF2F
+dw 0x4AF7
+dw 0x4AF7
 ;;;;;;;;;;;;;;; The solution below was a pure brain tumor and 
 ;;;;;;;;;;;;;;; I let it slide to the abyse here, make it better if you can!!!!!
 ;     pusha
