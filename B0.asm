@@ -4,49 +4,49 @@ org 0x7c00 + 512 * 2
     mov si, msg                ; Load message address
     call print_string          ; Call print routine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CHECKSUM
-pusha
-cld
-mov si, 0x7C00
-mov cx, 254                    ; bootloader
-mov bx, 0
+    pusha
+    cld
+    mov si, 0x7C00
+    mov cx, 254                ; bootloader
+    mov bx, 0
 boot:
     lodsw
     xor bx, ax
     loop boot
-mov [hash + 10], bx
-mov cx, 254                    ; empty
+    mov [hash + 10], bx
+    mov cx, 254                ; empty
 empty:
     lodsw
     xor bx, ax
     loop empty
-mov [hash + 8], bx
-mov cx, 254                    ; checksum
+    mov [hash + 8], bx
+    mov cx, 254                ; checksum
 check:
     lodsw
     xor bx, ax
     loop check
-mov [hash + 6], bx
-mov cx, 254                    ; B1
+    mov [hash + 6], bx
+    mov cx, 254                ; B1
 B1:
     lodsw
     xor bx, ax
     loop B1
-mov [hash + 4], bx
-mov cx, 254                    ; B2
+    mov [hash + 4], bx
+    mov cx, 254                ; B2
 B2:
     lodsw
     xor bx, ax
     loop B2
-mov [hash + 2], bx
-mov cx, 2046                   ; pacman
+    mov [hash + 2], bx
+    mov cx, 2046               ; pacman
 pacman:
     lodsw
     xor bx, ax
     loop pacman
-mov [hash], bx
+    mov [hash], bx
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CHECKER
-mov si, 10                      ; Print all hashes
-mov bx, 6
+    mov si, 10                 ; Print all hashes
+    mov bx, [blocks]           ; Sum of blocks to check
 hash_print:
     mov ax, [hash + si]
     sub si, 2
@@ -54,57 +54,37 @@ hash_print:
     dec bx
     cmp bx, 0
     jne hash_print
-
-
-    mov si, nl
+    mov si, nl                 ; Print new line
     call print_string
-
-
-
     mov bx, 0x7c00 + 508 - 512
-    mov cx, 7
-
-check_hash:
+    mov cx, [blocks]
+    inc cx
+check_hash:                    ; Print status of the checksum
     mov si, cx
     imul si, 2 
     mov dx, [hash + si - 4]
-
-    
     cmp cx, 1
-    je ou
-
+    jbe ou
     add bx, 512
-
     cmp [bx], dx
     jne not_ckeck
-    
     cmp [bx], dx
     je ok_ckeck
-
-
-
 ou:    
     mov si, nl
     call print_string
-
-popa
-    jmp 0x7c00     
-
+    popa
+    jmp 0x7c00                 ; Return control to the bootloader
 ok_ckeck:
     dec cx
     mov si, ok
     call print_string
     jmp check_hash
-
 not_ckeck:
     dec cx
     mov si, no
     call print_string
-    jmp check_hash
-
-
-
-            ; Return control to the bootloader
+    jmp check_hash      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 print_string:                  ; mov si, STRING TO PRINT
     push ax
@@ -150,11 +130,16 @@ no db 'NOT  ',0
 count dw 0
 address dw 0x7C00
 hash times (10) dw 0x0000
-blocks db 20
+blocks dw 6
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGNATUR
+db "sumchecker v1.0"               ; Name and version
+db "- Created by Nikita Konkov"    ; Author information
+db "- Build date: 03/26/2025"      ; Build date
+db 0     
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0xE7BC
-dw 0xE7BC
+dw 0x4C32
+dw 0x4C32
 ;;;;;;;;;;;;;;; The solution below was a pure brain tumor and 
 ;;;;;;;;;;;;;;; I let it slide to the abyse here, make it better if you can!!!!!
 ;     pusha
