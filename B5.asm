@@ -1,5 +1,5 @@
 ; dword.asm
-org 0x7c00 + 512 * 4
+org 0x7c00 + 512 * 9 ; 10 ; 11
 ; Initialize segment registers
 xor ax, ax              ; Zero AX register
 mov ds, ax              ; Set DS to 0
@@ -23,8 +23,8 @@ print_string:
 .done:
     ret
 
-msg db 'B2 ', 0x0D, 0x0A, 0
+msg db 'B5 ', 0x0D, 0x0A, 0
 nl db  0x0D, 0x0A, 0
-times 508-($-$$) db 0   ; Pad to 510 bytes
-dw 0x6930
-dw 0x6930
+times 1020-($-$$) db 0  ; Pad to 510 bytes
+dw 0x8888
+dw 0x8888

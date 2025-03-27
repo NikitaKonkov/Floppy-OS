@@ -38,7 +38,7 @@ B2:
     xor bx, ax
     loop B2
     mov [hash + 2], bx
-    mov cx, 2046               ; pacman
+    mov cx, 508                ; pacman
 pacman:
     lodsw
     xor bx, ax
@@ -61,11 +61,12 @@ hash_print:
     inc cx
 check_hash:                    ; Print status of the checksum
     mov si, cx
+    
     imul si, 2 
+    add bx, [address + si] ; <- HERE
     mov dx, [hash + si - 4]
     cmp cx, 1
     jbe ou
-    add bx, 512
     cmp [bx], dx
     jne not_ckeck
     cmp [bx], dx
@@ -128,7 +129,7 @@ nl db 0x0D, 0x0A, 0
 ok db 'OK   ',0
 no db 'NOT  ',0
 count dw 0
-address dw 0x7C00
+address dw 0,0,1024,512,512,512,512,512
 hash times (10) dw 0x0000
 blocks dw 6
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGNATUR
@@ -138,8 +139,8 @@ db "- Build date: 03/26/2025"      ; Build date
 db 0     
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EOF
 times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0x4C32
-dw 0x4C32
+dw 0x4E30
+dw 0x4E30
 ;;;;;;;;;;;;;;; The solution below was a pure brain tumor and 
 ;;;;;;;;;;;;;;; I let it slide to the abyse here, make it better if you can!!!!!
 ;     pusha

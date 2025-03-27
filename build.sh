@@ -26,7 +26,10 @@ nasm -f bin -o bin/B1.bin B1.asm
 nasm -f bin -o bin/B2.bin B2.asm
 # B3
 nasm -f bin -o bin/B3.bin B3.asm
-
+# B4
+nasm -f bin -o bin/B4.bin B4.asm
+# B5
+nasm -f bin -o bin/B5.bin B5.asm
 
 # Create a blank floppy disk image 2880 * 512 = 1.44MB
 dd if=/dev/zero of=floppy.img bs=512 count=2880
@@ -41,9 +44,11 @@ dd if=bin/B1.bin of=floppy.img bs=512 seek=2 conv=notrunc
 # B2
 dd if=bin/B2.bin of=floppy.img bs=512 seek=3 conv=notrunc
 # B3
-dd if=bin/B3.bin of=floppy.img bs=512 count=8 seek=4 conv=notrunc # 1/4 PACMAN GAME :)
-
-
+dd if=bin/B3.bin of=floppy.img bs=512 seek=4 count=2 conv=notrunc
+# B4
+dd if=bin/B4.bin of=floppy.img bs=512 seek=6 count=2 conv=notrunc
+# B5
+dd if=bin/B5.bin of=floppy.img bs=512 seek=8 count=2 conv=notrunc
 
 
 if [ "$1" == "-d" ]; then

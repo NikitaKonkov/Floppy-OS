@@ -24,7 +24,7 @@ print_string:
     ret
 
 msg db 'B1 ', 0x0D, 0x0A, 0
-
-times 508-($-$$) db 0          ; Pad to 510 bytes
-dw 0x1C3D
-dw 0x1C3D
+nl db  0x0D, 0x0A, 0
+times 508-($-$$) db 0   ; Pad to 510 bytes
+dw 0xB8BB
+dw 0xB8BB

@@ -21,7 +21,7 @@ build:
     int 0x13                       ; BIOS interrupt to read from disk
     jc disk_error                  ; If carry flag is set, print error message and hang
     add si, 2
-    cmp si, 8
+    cmp si, [blocks]
     jne build 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EXECUTER
 launch:
@@ -54,11 +54,12 @@ done:
     pop ax
     ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; DATA
+blocks      dw 12
 tracker     dw 0
 flag0       db 0
-biread      dw 0x0201           , 0x0201           , 0x0201           , 0x0208
-cylins      dw 0x0002           , 0x0003           , 0x0004           , 0x0005
-address     dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5
+biread      dw 0x0201           , 0x0201           , 0x0201           , 0x0202           , 0x0202           , 0x0202
+cylins      dw 0x0002           , 0x0003           , 0x0004           , 0x0005           , 0x0007           , 0x0009
+address     dw 0x7c00 + 512 * 2 , 0x7c00 + 512 * 3 , 0x7c00 + 512 * 4 , 0x7c00 + 512 * 5 , 0x7c00 + 512 * 7 , 0x7c00 + 512 * 9
 error_msg   db 'Disk read error!', 0x0D, 0x0A, 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SIGNATUR
 db "bootloader v0.3"               ; Name and version
